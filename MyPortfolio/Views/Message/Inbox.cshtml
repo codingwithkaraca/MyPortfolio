@@ -1,0 +1,173 @@
+﻿@using Entities
+@model List<Message>
+@{
+    ViewData["Title"] = "Inbox";
+    Layout = "_AdminLayout";
+}
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Message List</h4>
+
+            <div class="table-responsive">
+                <table class="table" id="allMessagesTable">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Sender</th>
+                        <th>Subject</th>
+                        <th>Send Date</th>
+                        <th>Open Message</th>
+                        <th>Status</th>
+                        <th>Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.MessageId</td>
+                            <td>@item.NameSurname</td>
+                            <td>@item.Subject</td>
+                            <td>@item.SendDate</td>
+                            <td>
+                                <a class="btn btn-outline-twitter">Open Message</a>
+                            </td>
+                            <td>
+                                <a class="btn btn-outline-twitter">Mark Unread</a>
+                            </td>
+                            <td>
+                                <a class="btn btn-outline-twitter">Delete Message</a>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Mesaj detayları için modal *@
+<div id="message-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content bg-inverse-light">
+            <div class="modal-header">
+                <h5 class="modal-title">Message Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <strong>Sender:</strong> <span id="NameSurname"></span>
+                </p>
+                <p>
+                    <strong>Subject:</strong> <span id="Subject"></span>
+                </p>
+                <p>
+                    <strong>Details:</strong> <span id="MessageDetail"></span>
+                </p>
+                <div class="row">
+                    <div class="col-6">
+                        <p>
+                            <strong>Email:</strong> <span id="Email"></span>
+                        </p>
+                    </div>
+                    <div class="col-6">
+                        <p>
+                            <strong>Time:</strong> <span id="SendDate"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    @*var allMessageList = null;
+    $(document).ready(function (){
+        $("#allMessagesTable").DataTable({
+        columnDefs: [{
+            "defaultContent": "*",
+            "targets":"_all"
+        }]
+            
+        });
+        
+        refreshTable();
+    });
+    
+    function refreshTable(){
+        $.ajax({
+            url: '@Url.Action("GetAllMessages", "Message")',
+            type: 'GET',
+            success: function (data){
+                if (data.code == 200){
+                    var table = $("#allMessagesTable").DataTable();
+                    table.clear().draw();
+                    allMessageList = data.messageList;
+                    data.messageList.forEach(function (item){
+                        var status = item.isRead 
+                        ? '<a class="btn btn-simple-info">Okundu Olarak İşaretle</a>'
+                        : '<a class="btn btn-simple-danger">Okunmadı Olarak İşaretle</a>';
+                         
+                        table.row.add([
+                            item.messageId,
+                            item.nameSurname,
+                            item.subject,
+                            item.sendDate,
+                            '<a onclick="goMessageDetail(' + item.messageId + ')" class="btn btn-primary">Aç</a>',
+                            item.status,
+                            '<a class="btn btn-danger">Sil</a>'
+                        ]).draw();
+                    });
+                }
+                $1$else{
+                toastr.error(data.message);
+                }#1#
+                
+            },
+            error: function (xhr, status, error){
+                console.error("Mesajlar yüklenemedi:", status, error);
+                alert("Mesajlar yüklenemedi: " + error);
+            } 
+            
+        });
+    }*@
+    
+    function goMessageDetail(messageId){
+        if (messageId != 0){
+        $.ajax({
+            url: '@Url.Action("MessageDetail", "Message")',
+            type: 'GET',
+            data: { id: messageId },
+            success: function (response){
+                $("#NameSurname").text(response.nameSurname);
+                $("#Subject").text(response.subject);
+                $("#MessageDetail").text(response.messageDetail);
+                $("#Email").text(response.email);
+                $("#SendDate").text(response.sendDate);
+                openModal();
+            },
+            error: function (){
+                alert("Error Message loading");
+            }
+        });
+        }
+    
+    }
+
+// modal açma    
+    function openModal(){
+        $("#message-modal").modal('show');
+    }
+    
+// modal kapama
+    function closeModal(){
+    $("#message-modal").modal('hide');
+    }
+     
+
+</script>

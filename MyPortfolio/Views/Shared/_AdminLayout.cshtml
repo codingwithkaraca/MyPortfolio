@@ -1,0 +1,61 @@
+﻿@{
+    ViewData["Title"] = "New Admin Layout";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+@await Component.InvokeAsync("_AdminHeadComponent");
+
+<body>
+<div class="container-scroller">
+    <!-- partial:../../partials/_sidebar.html -->
+    <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+            <a class="sidebar-brand brand-logo" href="/Dashboard/Index/">
+                <img src="/files/logo-3.png" alt="logo"/>
+            </a>
+            <a class="sidebar-brand brand-logo-mini" href="/Dashboard/Index/">
+                <img src="/files/logo-3.png" alt="logo"/>
+            </a>
+        </div>
+
+        @await Component.InvokeAsync("_AdminSideBarComponent")
+        
+    </nav>
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+        <!-- partial:../../partials/_navbar.html -->
+
+        @await Component.InvokeAsync("_AdminNavbarComponent")
+        <!-- partial -->
+        <div class="main-panel">
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h3 class="page-title"></h3>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="#">@ViewBag.v1</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">@ViewBag.v2</li>
+                        </ol>
+                    </nav>
+                </div>
+                @RenderBody()
+            </div>
+            <!-- content-wrapper ends -->
+            <!-- partial:../../partials/_footer.html -->
+            @await Component.InvokeAsync("_AdminFooterComponent")
+            <!-- partial -->
+        </div>
+        <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+</div>
+
+@await Component.InvokeAsync("_AdminScriptComponent")
+
+
+</body>
+</html>

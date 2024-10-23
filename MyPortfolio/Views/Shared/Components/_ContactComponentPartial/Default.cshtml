@@ -1,0 +1,133 @@
+﻿<style>
+    .message-warning, .message-success {
+        display: none; /* Başlangıçta mesajlar gizli */
+    }
+
+</style>
+<section id="contact" class="s-contact target-section">
+
+    <div class="overlay"></div>
+
+    <div class="row narrow section-intro">
+        <div class="col-full">
+            <h3>Contact</h3>
+            <h1>Say Hello.</h1>
+
+            <p class="lead">For job opportunities, projects and questions, you can contact me from the contact section below.</p>
+        </div>
+    </div>
+
+    <div class="row contact__main">
+        <div class="col-eight tab-full contact__form">
+            <form name="contactForm" id="contactForm" method="post">
+                <fieldset>
+
+                    <div class="form-field">
+                        <input name="NameSurname" type="text" id="contactName" placeholder="Name Surname" value="" minlength="2" required class="full-width">
+                    </div>
+                    <div class="form-field">
+                        <input name="Email" type="email" id="contactEmail" placeholder="Email" required class="full-width">
+                    </div>
+                    <div class="form-field">
+                        <input name="Subject" type="text" id="contactSubject" placeholder="Subject" value="" required class="full-width">
+                    </div>
+                    <div class="form-field">
+                        <textarea name="MessageDetail" id="contactMessage" placeholder="message" rows="10" cols="50" required class="full-width"></textarea>
+                    </div>
+                    <div class="form-field">
+                        <button class="full-width btn--primary" onclick="submitForm()">Submit</button>
+                        <div class="submit-loader">
+                            <div class="text-loader">Sending...</div>
+                            <div class="s-loader">
+                                <div class="bounce1"></div>
+                                <div class="bounce2"></div>
+                                <div class="bounce3"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </fieldset>
+            </form>
+
+            <!-- contact-warning -->
+            <div class="message-warning">
+                Something went wrong. Please try again.
+            </div>
+
+            <!-- contact-success -->
+            <div class="message-success">
+                Your message was sent, thank you!<br>
+            </div>
+
+        </div>
+        <div class="col-four tab-full contact__infos">
+            <h4 class="h06">Phone</h4>
+            <p>
+                Phone: (+90) 551 9943839<br>
+            </p>
+
+            <h4 class="h06">Email</h4>
+            <p>
+                karacaalper806@gmail.com<br>
+            </p>
+
+            <h4 class="h06">Address</h4>
+            <p>
+                Antalya-Konya<br>
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+
+    $("#contactForm").submit(function(event) {
+       event.preventDefault(); 
+       var form = $(this);
+       var email = $("#contactEmail").val();
+       if (!validateEmail(email)){
+            $(".message-warning").show().text("Please enter a valid email address.");
+            $(".message-success").hide();
+            return;
+       }
+       $.ajax({
+           url: "/Default/SendMessage",  
+           type: "POST",                 
+           data: form.serialize(),       
+           success: function(response) {
+               if (response.success) {
+                   clearForm();  
+                   $(".message-success").show().text(response.message); 
+                   $(".message-warning").hide();  
+               } else {
+                   $(".message-warning").show().text(response.message); 
+                   $(".message-success").hide();  
+               }
+           },
+           error: function(response) {
+               $(".message-warning").show().text("Something went wrong. Please try again."); 
+               $(".message-success").hide();  
+           }
+       });
+   }); 
+
+    // formun gönderildikten sonra temizlenmesi için
+    function clearForm(){
+        $("#contactName").val("");
+        $("#contactEmail").val("");
+        $("#contactSubject").val("");
+        $("#contactMessage").val("");
+    }
+    
+    // event.preventDefault(); olayı htmlin email 
+    //doğrulamasını engellediği için ek doğrulama fonksiyonu gerçekleştirdim
+    function validateEmail(email) {
+        var re = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/; // Basit bir e-posta düzeni
+        return re.test(email);
+    }
+
+</script>
