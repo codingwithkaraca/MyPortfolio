@@ -9,6 +9,7 @@
 /Users/alperkaraca/RiderProjects/MyPortfolio/DataAccessLayer/obj/Debug/net8.0/DataAccessLayer.AssemblyInfoInputs.cache
 /Users/alperkaraca/RiderProjects/MyPortfolio/DataAccessLayer/obj/Debug/net8.0/DataAccessLayer.AssemblyInfo.cs
 /Users/alperkaraca/RiderProjects/MyPortfolio/DataAccessLayer/obj/Debug/net8.0/DataAccessLayer.csproj.CoreCompileInputs.cache
+/Users/alperkaraca/RiderProjects/MyPortfolio/DataAccessLayer/obj/Debug/net8.0/DataAccessLayer.sourcelink.json
 /Users/alperkaraca/RiderProjects/MyPortfolio/DataAccessLayer/obj/Debug/net8.0/DataAccessLayer.csproj.CopyComplete
 /Users/alperkaraca/RiderProjects/MyPortfolio/DataAccessLayer/obj/Debug/net8.0/DataAccessLayer.dll
 /Users/alperkaraca/RiderProjects/MyPortfolio/DataAccessLayer/obj/Debug/net8.0/refint/DataAccessLayer.dll

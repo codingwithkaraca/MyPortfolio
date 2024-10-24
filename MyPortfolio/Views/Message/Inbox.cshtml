@@ -1,6 +1,4 @@
-﻿@using Entities
-@model List<Message>
-@{
+﻿@{
     ViewData["Title"] = "Inbox";
     Layout = "_AdminLayout";
 }
@@ -8,7 +6,6 @@
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">Message List</h4>
-
             <div class="table-responsive">
                 <table class="table" id="allMessagesTable">
                     <thead>
@@ -23,24 +20,6 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>@item.MessageId</td>
-                            <td>@item.NameSurname</td>
-                            <td>@item.Subject</td>
-                            <td>@item.SendDate</td>
-                            <td>
-                                <a class="btn btn-outline-twitter">Open Message</a>
-                            </td>
-                            <td>
-                                <a class="btn btn-outline-twitter">Mark Unread</a>
-                            </td>
-                            <td>
-                                <a class="btn btn-outline-twitter">Delete Message</a>
-                            </td>
-                        </tr>
-                    }
                     </tbody>
                 </table>
             </div>
@@ -49,50 +28,75 @@
 </div>
 
 @* Mesaj detayları için modal *@
-<div id="message-modal" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
-        <div class="modal-content bg-inverse-light">
-            <div class="modal-header">
-                <h5 class="modal-title">Message Details</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+<div class="modal fade" id="message-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h1 class="modal-title fs-5" id="modalTitle">Message Detail</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>
-                    <strong>Sender:</strong> <span id="NameSurname"></span>
-                </p>
-                <p>
-                    <strong>Subject:</strong> <span id="Subject"></span>
-                </p>
-                <p>
-                    <strong>Details:</strong> <span id="MessageDetail"></span>
-                </p>
-                <div class="row">
-                    <div class="col-6">
-                        <p>
-                            <strong>Email:</strong> <span id="Email"></span>
-                        </p>
+                <form>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label for="NameSurname" class="col-form-label">Name Surname:</label>
+                            <input hidden type="text" class="form-control" id="MessageId">
+                            <input type="text" class="form-control bg-gradient-secondary" id="NameSurname">
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label for="message-text" class="col-form-label">Subject:</label>
+                            <input class="form-control" id="Subject">
+                        </div>
                     </div>
-                    <div class="col-6">
-                        <p>
-                            <strong>Time:</strong> <span id="SendDate"></span>
-                        </p>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label for="message-text" class="col-form-label">Email:</label>
+                            <input class="form-control" id="Email">
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label for="message-text" class="col-form-label">Send Date:</label>
+                            <input class="form-control" id="SendDate"></input>
+                        </div>
                     </div>
-                </div>
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label for="message-text" class="col-form-label">Message Detail:</label>
+                            <textarea rows="10" class="form-control" id="MessageDetail"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeModal()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
 
+<script src="~/lib/jquery/jquery-3.7.1.min.js"></script>
+
 <script>
-    @*var allMessageList = null;
-    $(document).ready(function (){
+    var allMessageList = null;
+    
+    $(document).ready( function (){
         $("#allMessagesTable").DataTable({
+        "dom": "Tit",
         columnDefs: [{
             "defaultContent": "*",
             "targets":"_all"
-        }]
+        }],
+        "responsive": true,
+        "language": {
+            "emptyTable": "Gösterilecek veri yok",
+            "processing": "Veriler yükleniyor",
+            "sInfo": "<span class='text-white'>_TOTAL_ kayıttan _START_-_END_ arasındaki kayıtlar gösteriliyor</span>",
+            "sLoadingRecords": "Yükleniyor...",
+            "sZeroRecords": "Eşleşen Kayıt bulunamadı",
+            "oAria": {
+                "sSortAscending": ": artan sütun sıralamasını aktifleştir",
+                "sSortDescending": ": azalan sütun sıralamasını aktifleştir"
+                },
+            }
             
         });
         
@@ -110,23 +114,23 @@
                     allMessageList = data.messageList;
                     data.messageList.forEach(function (item){
                         var status = item.isRead 
-                        ? '<a class="btn btn-simple-info">Okundu Olarak İşaretle</a>'
-                        : '<a class="btn btn-simple-danger">Okunmadı Olarak İşaretle</a>';
+                        ? '<button onclick="updateStatus(this)" data-id="'+item.messageId+'" class="btn btn-danger">Mark Unread</button>'
+                        : '<button onclick="updateStatus(this)" data-id="'+item.messageId+'" class="btn btn-success">Mark Read</button>';
                          
-                        table.row.add([
+                    var rows = table.row.add([
                             item.messageId,
                             item.nameSurname,
                             item.subject,
-                            item.sendDate,
-                            '<a onclick="goMessageDetail(' + item.messageId + ')" class="btn btn-primary">Aç</a>',
-                            item.status,
+                            getDateFromLongDate(item.sendDate) +" "+ getTimeFromLongTime(item.sendDate),
+                            '<button onclick="goMessageDetail(this)" data-id="' +item.messageId + '"  class="btn btn-primary">Message Detail</button>',
+                            status,
                             '<a class="btn btn-danger">Sil</a>'
                         ]).draw();
                     });
                 }
-                $1$else{
-                toastr.error(data.message);
-                }#1#
+                else{
+                // toastr.error(data.message);
+                }
                 
             },
             error: function (xhr, status, error){
@@ -135,38 +139,62 @@
             } 
             
         });
-    }*@
-    
-    function goMessageDetail(messageId){
-        if (messageId != 0){
-        $.ajax({
-            url: '@Url.Action("MessageDetail", "Message")',
-            type: 'GET',
-            data: { id: messageId },
-            success: function (response){
-                $("#NameSurname").text(response.nameSurname);
-                $("#Subject").text(response.subject);
-                $("#MessageDetail").text(response.messageDetail);
-                $("#Email").text(response.email);
-                $("#SendDate").text(response.sendDate);
-                openModal();
-            },
-            error: function (){
-                alert("Error Message loading");
-            }
-        });
-        }
-    
     }
-
-// modal açma    
-    function openModal(){
+    
+    function goMessageDetail(value){
+        var data = value.dataset.id;
+        
+        if (data == 0) {
+            $("#modalTitle").text("Yeni mesaj Ekleme")
+        }
+        if (data != 0){
+            
+            var message = allMessageList.filter( function (item){
+                return item.messageId == data;
+            });
+            
+            setModal(message[0]);
+        }
         $("#message-modal").modal('show');
     }
+
+
     
 // modal kapama
     function closeModal(){
     $("#message-modal").modal('hide');
+    }
+    
+    // modal ayarlama
+    function setModal(data){
+        $("#MessageId").val(data.messageId);
+        $("#NameSurname").val(data.nameSurname);
+        $("#Subject").val(data.subject);
+        $("#Email").val(data.email);
+        $("#MessageDetail").val(data.messageDetail);
+        $("#SendDate").val(getDateFromLongDate(data.sendDate)+" "+getTimeFromLongTime(data.sendDate));
+        $("#IsRead").val(data.isRead);
+    }
+    
+    function updateStatus(value){
+        var MessageId = value.dataset.id;
+        
+
+        // eğer güncellemeye basıldıysa tüm bilgileri al
+        // yeni bir entity gönder bir nevi günncelleme 
+        // bunu araştır sadece bir özellik güncelleneceğinde nasıl yapılabilir.
+
+        $.ajax({
+            url: "@Url.Action("UpdateMessage", "Message")",
+            type: 'POST',
+            data: {'id': MessageId },
+            success: function (data){
+                if (data.code == 200){
+                    var message = data.message;
+                    refreshTable();
+                }
+            }
+        })
     }
      
 

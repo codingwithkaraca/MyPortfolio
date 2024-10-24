@@ -1,6 +1,8 @@
+using System.Net;
 using Business.Concretes;
 using DataAccessLayer.Concretes;
 using Entities;
+using Entities.VM;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MyPortfolio.Controllers
@@ -8,29 +10,43 @@ namespace MyPortfolio.Controllers
     public class FeatureController : Controller
     {
         FeatureManager featureManager = new FeatureManager(new EfFeatureDal());
-        // GET: FeatureController
+        
         public ActionResult Index()
         {
             ViewBag.v1 = "Feature";
             ViewBag.v2 = "Index";
-            var values = featureManager.TGetList();
-            return View(values);
+            return View();
         }
 
         [HttpGet]
-        public IActionResult EditFeature(int id)
+        public IActionResult GetFeature()
         {
-            ViewBag.v1 = "Feature";
-            ViewBag.v2 = "Edit Feature";
-            var value = featureManager.TGetById(id);
-            return View(value);
+            var featureList = new List<FeatureVM>();
+            var features = featureManager.TGetList();
+
+            foreach (var feature in features)
+            {
+                var featureListModel = new FeatureVM()
+                {
+                    FeatureId = feature.FeatureId,
+                    Title = feature.Title,
+                    Description = feature.Description,
+                };
+                
+                featureList.Add(featureListModel);
+            }
+            
+            return Ok( new { Code = HttpStatusCode.OK, featureList});
+            
+            
         }
         
         [HttpPost]
         public IActionResult EditFeature(Feature feature)
         {
             featureManager.TUpdate(feature);
-            return RedirectToAction("Index");   
+            var message = "Feature updated successfully";
+            return Ok( new {Code = HttpStatusCode.OK, message});
         }
         
     }

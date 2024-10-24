@@ -1,6 +1,7 @@
 using System.Net;
 using Business.Concretes;
 using DataAccessLayer.Concretes;
+using Entities;
 using Entities.VM;
 using Microsoft.AspNetCore.Mvc;
 
@@ -54,14 +55,36 @@ namespace MyPortfolio.Controllers
             return Ok(new { Code = HttpStatusCode.OK, messageList });
         }
 
-        // Mesaj okunmadı 
 
+        [HttpPost]
+        public IActionResult UpdateMessage(int id)
+        {
+            var value = messageManager.TGetById(id);
+
+            if (value.IsRead)
+            {
+                value.IsRead = false;
+            }
+            else
+            {
+                value.IsRead = true;
+            }
+            
+            messageManager.TUpdate(value);
+            
+            return Ok( new { Code = HttpStatusCode.OK, Message = "Message has been updated" });
+        }
+        
+        
+        
+        // Mesaj okunmadı 
+        [HttpPost]
         public IActionResult ChanceMessageToUnread(int id)
         {
             var message = messageManager.TGetById(id);
             message.IsRead = false;
             messageManager.TUpdate(message);
-            return RedirectToAction("Inbox");
+            return Ok(new { Code = HttpStatusCode.OK });
         }
         
         // Mesaj okundu

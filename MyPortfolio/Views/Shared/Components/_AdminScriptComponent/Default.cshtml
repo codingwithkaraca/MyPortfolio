@@ -1,16 +1,47 @@
 ﻿@* Jquery ve Bootstrap *@
 <script src="~/lib/jquery/jquery-3.7.1.min.js"></script>
-<script src="lib/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/lib/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
 @* Datatables *@
 <script src="~/js/DataTables/datatables.min.js"></script>
 
 
-
-@* Eğitimde mesaj bildiriimi için bu scripti kaldırmıştı *@ 
+@* Eğitimde mesaj bildiriimi için bu scripti kaldırmıştı. Daha sonra benim ajax isteklerini engelledi *@ 
+@*
 <script src="~/corona-free-dark-bootstrap-admin-template-1.0.0/template/assets/vendors/js/vendor.bundle.base.js"></script>
+*@
 
 <script src="~/corona-free-dark-bootstrap-admin-template-1.0.0/template/assets/js/off-canvas.js"></script>
 <script src="~/corona-free-dark-bootstrap-admin-template-1.0.0/template/assets/js/hoverable-collapse.js"></script>
 <script src="~/corona-free-dark-bootstrap-admin-template-1.0.0/template/assets/js/misc.js"></script>
 <script src="~/corona-free-dark-bootstrap-admin-template-1.0.0/template/assets/js/settings.js"></script>
 <script src="~/corona-free-dark-bootstrap-admin-template-1.0.0/template/assets/js/todolist.js"></script>
+
+<script>
+    // kısa tarihi alma
+    function getDateFromLongDate(date){
+        longDate = date.split('T');
+        
+        var d = new Date(longDate);
+        day = d.getDate().toString().padStart(2, '0');
+        month = (d.getMonth() + 1).toString().padStart(2, '0');
+        year = d.getFullYear();
+        
+        shortDate = [day,month,year].join("-");
+        
+        return shortDate;
+    }
+    
+    // sadece saati alma
+    function getTimeFromLongTime(time){
+        var longTime = time.split('T');
+        
+        var date = new Date(longTime);
+        var hour = date.getHours().toString().padStart(2, '0');
+        var minute = date.getMinutes().toString().padStart(2, '0');
+        
+        shortTime = hour+":"+ minute;
+        return shortTime;
+        
+    }
+    
+</script>

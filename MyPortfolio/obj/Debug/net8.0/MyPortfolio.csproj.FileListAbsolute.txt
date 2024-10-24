@@ -220,6 +220,7 @@
 /Users/alperkaraca/RiderProjects/MyPortfolio/MyPortfolio/obj/Debug/net8.0/MyPortfolio.MvcApplicationPartsAssemblyInfo.cache
 /Users/alperkaraca/RiderProjects/MyPortfolio/MyPortfolio/obj/Debug/net8.0/MyPortfolio.RazorAssemblyInfo.cache
 /Users/alperkaraca/RiderProjects/MyPortfolio/MyPortfolio/obj/Debug/net8.0/MyPortfolio.RazorAssemblyInfo.cs
+/Users/alperkaraca/RiderProjects/MyPortfolio/MyPortfolio/obj/Debug/net8.0/MyPortfolio.sourcelink.json
 /Users/alperkaraca/RiderProjects/MyPortfolio/MyPortfolio/obj/Debug/net8.0/staticwebassets.build.json
 /Users/alperkaraca/RiderProjects/MyPortfolio/MyPortfolio/obj/Debug/net8.0/staticwebassets.development.json
 /Users/alperkaraca/RiderProjects/MyPortfolio/MyPortfolio/obj/Debug/net8.0/staticwebassets/msbuild.MyPortfolio.Microsoft.AspNetCore.StaticWebAssets.props

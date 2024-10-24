@@ -1,36 +1,22 @@
-﻿@using Entities
-@model List<Feature>
-@{
+﻿@{
     ViewData["Title"] = "Feature";
     Layout = "_AdminLayout";
 }
-
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
-        <div class="card-body">
+        <div class="card-body" style="background-color: #185d8c">
             <h4 class="card-title">Feature</h4>
-
             <div class="table-responsive">
-                <table class="table">
+                <table class="table" id="featureTable">
                     <thead>
                     <tr>
                         <th>#</th>
                         <th>Title</th>
                         <th>Description</th>
+                        <th>Update</th>
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>@item.FeatureId</td>
-                            <td>@item.Title</td>
-                            <td>@item.Description</td>
-                            <td>
-                                <a href="/Feature/EditFeature/@item.FeatureId" class="btn btn-outline-warning">Update</a>
-                            </td>
-                        </tr>
-                    }
                     </tbody>
                 </table>
             </div>
@@ -38,6 +24,215 @@
     </div>
 </div>
 
-<!-- Mesaj bildirimleri hatası için _NewAdminLayout'da yorum satırına aldım -->
+@* Feature güncellemesi için Modal açacağım *@
+@*<div id="feature-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalTitle">Edit Feature</h5>
+                <button type="button" class="close" onclick="closeModal()" $1$data-dismiss="modal"#1# aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body row" style="background-color: #7d7979">
+                <div class="col-12">
+                    <label>Edit Title</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fas fa-heading"></i>
+                            </span>
+                        </div>
+                        <input id="featureId" hidden type="text" class="form-control">
+                        <input id="featureTitle" type="text" class="form-control" placeholder="Title"/>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label>Edit Description</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class=""></i>
+                            </span>
+                        </div>
+                        <input id="featureDescription" type="text" class="form-control" placeholder="Title"/>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeModal()" class="col-3 btn btn-danger">Cancel</button>
+                <button onclick="" class="col-3 btn btn-success">Save</button>
+            </div>
+            
+        </div>
+    </div>
+</div>*@
 
-<script src="~/corona-free-dark-bootstrap-admin-template-1.0.0/template/assets/vendors/js/vendor.bundle.base.js"></script>
+<div class="modal fade" id="feature-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title" id="exampleModalLabel">Edit Feature</h5>
+                <button onclick="closeModal()" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body bg-default">
+                <form>
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-form-label">Recipient:</label>
+                        <input hidden type="text" class="form-control" id="featureId">
+                        <input type="text" class="form-control" id="featureTitle">
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="col-form-label">Message:</label>
+                        <textarea class="form-control" id="featureDescription"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeModal()" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="updateFeature(this)" data-id="" type="button" class="btn btn-primary">Send message</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/lib/jquery/jquery-3.7.1.min.js"></script>
+
+<script>
+    var featureList = null;
+    
+    $(document).ready( function (){
+        $("#featureTable").DataTable({
+            "dom": 'Tit', 
+            columnDefs : [{
+                "defaultContent": "*",
+                "targets":"_all"
+            }],
+            "responsive": true,
+            "language": {
+                "emptyTable": "Gösterilecek veri yok",
+                "processing": "Veriler yükleniyor",
+                "sInfo": "<span class='text-white'>_TOTAL_ kayıttan _START_-_END_ arasındaki kayıtlar gösteriliyor</span>",
+                "sLoadingRecords": "Yükleniyor...",
+                "sZeroRecords": "Eşleşen Kayıt bulunamadı",
+                "oAria": {
+                    "sSortAscending": ": artan sütun sıralamasını aktifleştir",
+                    "sSortDescending": ": azalan sütun sıralamasını aktifleştir"
+                },
+            }
+        });
+        
+        refreshTable();
+    });
+
+</script>
+<script>
+    
+    function refreshTable(){
+        $.ajax({
+            url: '@Url.Action("GetFeature", "Feature")',
+            type: 'GET',
+            success: function (data){
+                if (data.code==200){
+                    var table = $("#featureTable").DataTable();
+                    table.clear().draw();
+                    featureList = data.featureList;
+                    data.featureList.forEach(function (item) {
+                        // switch
+                        
+                        var rows = table.row.add([
+                            item.featureId,
+                            item.title,
+                            item.description, 
+                            '<button onclick="openModal(this)"data-id="' + item.featureId +'" class="btn btn-warning">Update</button>',
+                        ]).draw();
+                    });
+                }
+            }
+         
+        })
+    }
+    
+</script>
+
+<script>
+    
+    // tek bir modalı güncelleme için kullanacağım.
+    function openModal(value){
+        // tabloda güncelle butonunua basıldığında dataset.id değeri 0 a eşitse 
+        // Modal başlığında yeni vatandaş ekleme yazsın değilse 
+        // Vatandaş Güncelleme yazsın
+        var data = value.dataset.id;
+        if (data == 0){
+            clearModal();
+            $("#modalTitle").text("Add New Feature");
+        }
+        if (data != 0){
+            $("#modalTitle").text("Edit Feature");
+            
+            // gelen feature listesinden id si data ya eşit olanı döndür
+            var feature = featureList
+            @*var feature = featureList.filter(function (item){
+              return  item.id == data;
+            });*@
+            // daha sonra setModal fonksiyonuna bu gelen entityi at
+            setModal(feature[0]);
+        }
+        $("#feature-modal").modal('show');
+    }
+    
+</script>
+
+<script>
+    // modal açma    
+
+    // modal kapama
+    function closeModal(){
+        $("#feature-modal").modal('hide');
+    }
+    
+    // boş modal için
+    function clearModal(){
+        $("#feature-modal #featureId").val("");
+        $("#feature-modal #featureTitle").val("");
+        $("#feature-modal #featureDescription").val("");
+    }
+    
+    function setModal(data){
+        // element içlerine gelen veriyi ayarlıcam
+        $("#feature-modal #featureId").val(data.featureId);
+        $("#feature-modal #featureTitle").val(data.title);
+        $("#feature-modal #featureDescription").val(data.description);
+    }
+    
+    function updateFeature(value){
+        // burda güncellemede kaldım.
+        var featureId = $("#feature-modal #featureId").val();
+        var title = $("#feature-modal #featureTitle").val();
+        var description = $("#feature-modal #featureDescription").val();
+        
+        let Feature = {
+            FeatureId : featureId,
+            Title : title, 
+            Description : description, 
+        }
+            
+        $.ajax({
+            url:"@Url.Action("EditFeature", "Feature")",
+            type: 'POST',
+            data: { "feature": Feature},
+            success: function (item){
+                if (item.code == 200){
+                    var message = item.message;
+                    refreshTable();
+                    closeModal();
+                }
+            },
+            
+        })
+    }
+
+</script>
