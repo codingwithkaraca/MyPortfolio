@@ -74,34 +74,14 @@ namespace MyPortfolio.Controllers
             
             return Ok( new { Code = HttpStatusCode.OK, Message = "Message has been updated" });
         }
-        
-        
-        
-        // Mesaj okunmadı 
-        [HttpPost]
-        public IActionResult ChanceMessageToUnread(int id)
-        {
-            var message = messageManager.TGetById(id);
-            message.IsRead = false;
-            messageManager.TUpdate(message);
-            return Ok(new { Code = HttpStatusCode.OK });
-        }
-        
-        // Mesaj okundu
-        public IActionResult ChanceMessageToRead(int id)
-        {
-            var message = messageManager.TGetById(id);
-            message.IsRead = true;
-            messageManager.TUpdate(message);
-            return RedirectToAction("Inbox");
-        }
-        
 
+        [HttpGet]
         public IActionResult DeleteMessage(int id)
         {
             var value =messageManager.TGetById(id);
             messageManager.TDelete(value);
-            return RedirectToAction("Inbox");
+
+            return Ok(new { Code = HttpStatusCode.OK, Message = "Message has been deleted" });
         }
 
         [HttpGet]
